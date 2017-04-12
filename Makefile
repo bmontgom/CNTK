@@ -321,6 +321,26 @@ $(PERF_PROFILER_LIB): $(PP_OBJ)
 
 
 ########################################
+# C++ extensibility examples library
+########################################
+
+CPP_EXTENSIBILITY_EXAMPLES_LIBRARY_SRC =\
+	$(SOURCEDIR)/../Examples/Extensibility/CPP/CPPExtensibilityExamplesLibrary.cpp \
+
+CPP_EXTENSIBILITY_EXAMPLES_LIBRARY_OBJ := $(patsubst %.cpp, $(OBJDIR)/%.o, $(CPP_EXTENSIBILITY_EXAMPLES_LIBRARY_SRC))
+
+CPP_EXTENSIBILITY_EXAMPLES_LIB:= $(LIBDIR)/Cntk.ExtensibilityExamples-$(CNTK_COMPONENT_VERSION).so
+ALL_LIBS += $(CPP_EXTENSIBILITY_EXAMPLES_LIB)
+SRC += $(CPP_EXTENSIBILITY_EXAMPLES_LIBRARY_SRC)
+
+$(CPP_EXTENSIBILITY_EXAMPLES_LIB): $(CPP_EXTENSIBILITY_EXAMPLES_LIBRARY_OBJ)
+	@echo $(SEPARATOR)
+	@echo creating $@ for $(ARCH) with build type $(BUILDTYPE)
+	@mkdir -p $(dir $@)
+	$(CXX) $(LDFLAGS) -shared $(patsubst %,$(RPATH)%, $(ORIGINDIR)) -o $@ $^
+
+
+########################################
 # Math library
 ########################################
 
@@ -509,7 +529,7 @@ $(CNTKLIBRARY_LIB): $(CNTKLIBRARY_OBJ) | $(CNTKMATH_LIB)
 	@echo $(SEPARATOR)
 	@mkdir -p $(dir $@)
 	@echo building $@ for $(ARCH) with build type $(BUILDTYPE)
-	$(CXX) $(LDFLAGS) -shared $(patsubst %,-L%, $(LIBDIR) $(LIBPATH) $(GDK_NVML_LIB_PATH)) $(patsubst %,$(RPATH)%, $(ORIGINDIR) $(LIBPATH)) -o $@ $^ $(LIBS) -l$(CNTKMATH) $(PROTOBUF_PATH)/lib/libprotobuf.a -fopenmp
+	$(CXX) $(LDFLAGS) -shared $(patsubst %,-L%, $(LIBDIR) $(LIBPATH) $(GDK_NVML_LIB_PATH)) $(patsubst %,$(RPATH)%, $(ORIGINDIR) $(LIBPATH)) -o $@ $^ $(LIBS) -l$(CNTKMATH) $(PROTOBUF_PATH)/lib/libprotobuf.a -ldl -fopenmp
 
 ########################################
 # LibEval
